@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+    <h2>Upload QR Code</h2>
+
+    <input type="file" id="file" accept="image/*" />
+    <button onclick="upload()">Scan</button>
+
+    <pre id="result"></pre>
+
+    <script>
+        async function upload() {
+            const file = document.getElementById("file").files[0];
+            if (!file) {
+                alert("Please select an image.");
+                return;
+            }
+
+            let form = new FormData();
+            form.append("image", file);
+
+            const res = await fetch("http://localhost:3000/scan", {
+                method: "POST",
+                body: form,
+            });
+
+            const data = await res.json();
+
+            // Show output for debugging
+            document.getElementById("result").textContent =
+                JSON.stringify(data, null, 2);
+
+            // 🔥 AUTO-REDIRECT IF SUCCESS
+            if (data?.data) {
+                window.location.href = data.data;
+            } else {
+                alert("QR does not contain a valid URL");
+            }
+        }
+    </script>
+</body>
+
+</html>
